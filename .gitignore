@@ -142,3 +142,10 @@ ipython_config.py
 pyvenv.cfg
 .env
 pip-selfcheck.json
+
+# VnCoreNLP
+VnCoreNLP
+
+# data, model
+*.csv
+*.joblib
