@@ -26,32 +26,34 @@ def transform_abbreviations(text):
     res = []
     words = text.split()
     for word in words:
-        if word in abbreviations:
-            res.append(abbreviations[word])
+        temp = word
+        if temp in abbreviations:
+            res.append(abbreviations[temp])
             continue
         
-        word = remove_special_char(word)
-        if word in abbreviations:
-            res.append(abbreviations[remove_special_char(word)])
+        temp = remove_special_char(temp)
+        if temp in abbreviations:
+            res.append(abbreviations[remove_special_char(temp)])
             continue
             
-        word = remove_duplicated_char(word)
-        if word in abbreviations:
-            res.append(abbreviations[remove_duplicated_char(word)])
+        temp = remove_duplicated_char(temp)
+        if temp in abbreviations:
+            res.append(abbreviations[remove_duplicated_char(temp)])
             continue
         
-        res.append(word)
+        res.append(remove_duplicated_char(word))
 
     return " ".join(res)
 
 
 def remove_unknown_words(text):
-    with open("data/single_vocab.txt") as f:
-        vocabs = f.read().splitlines()
+    with open("data/vietnam74K.txt") as f:
+        vietnam74K = f.read().splitlines()
+    vocabs = [i.lower() for i in vietnam74K]
     res = []
     words = text.split()
     for word in words:
-        if word in vocabs:
+        if " ".join(word.split("_")) in vocabs:
             res.append(word)
 
     return " ".join(res)
@@ -85,9 +87,9 @@ def preprocess_text(text, tokenizer):
     text = " ".join(text.split())
     text = text.lower()
     text = transform_abbreviations(text)
+    text = tokenize(text, tokenizer)
     text = remove_unknown_words(text)
     text = remove_stop_words(text)
-    text = tokenize(text, tokenizer)
     res = text
 
     return res
