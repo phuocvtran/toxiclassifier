@@ -33,12 +33,12 @@ def transform_abbreviations(text):
         
         temp = remove_special_char(temp)
         if temp in abbreviations:
-            res.append(abbreviations[remove_special_char(temp)])
+            res.append(abbreviations[temp])
             continue
             
         temp = remove_duplicated_char(temp)
         if temp in abbreviations:
-            res.append(abbreviations[remove_duplicated_char(temp)])
+            res.append(abbreviations[temp])
             continue
         
         res.append(remove_duplicated_char(word))
