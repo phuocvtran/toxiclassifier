@@ -20,9 +20,7 @@ def tokenize(text, tokenizer):
     return " ".join(res)
 
 
-def transform_abbreviations(text):
-    with open("data/abbreviations.json", "r") as json_file:
-        abbreviations = json.load(json_file)
+def transform_abbreviations(text, abbreviations):
     res = []
     words = text.split()
     for word in words:
@@ -46,10 +44,7 @@ def transform_abbreviations(text):
     return " ".join(res)
 
 
-def remove_unknown_words(text):
-    with open("data/vietnam74K.txt") as f:
-        vietnam74K = f.read().splitlines()
-    vocabs = [i.lower() for i in vietnam74K]
+def remove_unknown_words(text, vocabs):
     res = []
     words = text.split()
     for word in words:
@@ -71,9 +66,7 @@ def remove_duplicated_char(text):
     return res
 
 
-def remove_stop_words(text):
-    with open("data/stop_words.txt") as f:
-        stop_words = f.read().splitlines()
+def remove_stop_words(text, stop_words):
     res = []
     words = text.split()
     for word in words:
@@ -83,13 +76,13 @@ def remove_stop_words(text):
     return " ".join(res)
 
 
-def preprocess_text(text, tokenizer):
+def preprocess_text(text, tokenizer, abbreviations, vocabs, stop_words):
     text = " ".join(text.split())
     text = text.lower()
-    text = transform_abbreviations(text)
+    text = transform_abbreviations(text, abbreviations)
     text = tokenize(text, tokenizer)
-    text = remove_unknown_words(text)
-    text = remove_stop_words(text)
+    text = remove_unknown_words(text, vocabs)
+    text = remove_stop_words(text, stop_words)
     res = text
 
     return res
@@ -97,6 +90,19 @@ def preprocess_text(text, tokenizer):
 
 def preprocess_df(df):
     tokenizer = init_tokenizer()
-    df.comment = df.comment.apply(preprocess_text, tokenizer=tokenizer)
+    with open("data/abbreviations.json", "r") as json_file:
+        abbreviations = json.load(json_file)
+    
+    with open("data/vietnam74K.txt") as f:
+        vietnam74K = f.read().splitlines()
+    vocabs = [i.lower() for i in vietnam74K]
+    
+    with open("data/stop_words.txt") as f:
+        stop_words = f.read().splitlines()
+    df.comment = df.comment.apply(preprocess_text, 
+                                  tokenizer=tokenizer, 
+                                  abbreviations=abbreviations, 
+                                  vocabs=vocabs, 
+                                  stop_words=stop_words)
 
     return df
