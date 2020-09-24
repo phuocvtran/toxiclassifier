@@ -2,6 +2,7 @@ from vncorenlp import VnCoreNLP
 import pandas as pd
 import json
 import re
+import string
 
 
 def init_tokenizer():
@@ -44,16 +45,6 @@ def transform_abbreviations(text, abbreviations):
     return " ".join(res)
 
 
-def remove_unknown_words(text, vocabs):
-    res = []
-    words = text.split()
-    for word in words:
-        if " ".join(word.split("_")) in vocabs:
-            res.append(word)
-
-    return " ".join(res)
-
-
 def remove_special_char(text):
     res = re.sub(r"[^\w\s]", "", text)
 
@@ -76,12 +67,25 @@ def remove_stop_words(text, stop_words):
     return " ".join(res)
 
 
-def preprocess_text(text, tokenizer, abbreviations, vocabs, stop_words):
+# https://stackoverflow.com/a/49146722/330558
+def remove_emoji(text):
+    emoji_pattern = re.compile("["
+                           u"\U0001F600-\U0001F64F"  # emoticons
+                           u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                           u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                           u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                           u"\U00002702-\U000027B0"
+                           u"\U000024C2-\U0001F251"
+                           "]+", flags=re.UNICODE)
+    return emoji_pattern.sub(r'', text)
+
+
+def preprocess_text(text, tokenizer, abbreviations, stop_words):
     text = " ".join(text.split())
     text = text.lower()
+    text = remove_emoji(text)
     text = transform_abbreviations(text, abbreviations)
     text = tokenize(text, tokenizer)
-    text = remove_unknown_words(text, vocabs)
     text = remove_stop_words(text, stop_words)
     res = text
 
@@ -93,16 +97,11 @@ def preprocess_df(df):
     with open("data/abbreviations.json", "r") as json_file:
         abbreviations = json.load(json_file)
     
-    with open("data/vietnam74K.txt") as f:
-        vietnam74K = f.read().splitlines()
-    vocabs = [i.lower() for i in vietnam74K]
-    
     with open("data/stop_words.txt") as f:
         stop_words = f.read().splitlines()
     df.comment = df.comment.apply(preprocess_text, 
                                   tokenizer=tokenizer, 
                                   abbreviations=abbreviations, 
-                                  vocabs=vocabs, 
                                   stop_words=stop_words)
 
     return df
