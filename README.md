@@ -4,7 +4,7 @@
 Chạy các lệnh sau:
 ```shell
 # Clone repo này
-git clone https://github.com/phuocvtran/toxiclassifier.git --branch ex-model
+git clone https://github.com/phuocvtran/toxiclassifier.git --branch model
 # Chuyển vào folder toxiclassifier
 cd toxiclassifier
 # Clone repo của VnCoreNLP
