@@ -97,6 +97,7 @@ def preprocess_text(text, tokenizer, abbreviations, stop_words):
     text = transform_abbreviations(text, abbreviations)
     text = tokenize(text, tokenizer)
     text = remove_punctuation(text)
+    text = transform_abbreviations(text, abbreviations)
     text = remove_stop_words(text, stop_words)
     res = text
 

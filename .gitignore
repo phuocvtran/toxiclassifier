@@ -148,4 +148,4 @@ VnCoreNLP
 
 # data, model
 *.csv
-*.joblib
+model/
